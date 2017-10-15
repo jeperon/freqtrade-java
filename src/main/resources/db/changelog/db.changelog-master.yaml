@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: jeperon
+      changes:
+        - createTable:
+            tableName: trades
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: exchange
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: pair
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_open
+                  type: boolean
+                  defaultValue: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: open_rate
+                  type: decimal(19,10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: close_rate
+                  type: decimal(19,10)
+              - column:
+                  name: close_profit
+                  type: decimal(19,10)
+              - column:
+                  name: stake_amount
+                  type: decimal(19,10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: decimal(19,10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: open_date
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: close_date
+                  type: datetime
+              - column:
+                  name: open_order_id
+                  type: varchar(50)
