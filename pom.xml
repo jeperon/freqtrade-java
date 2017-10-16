@@ -33,6 +33,25 @@
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
+        
+        <!-- Technical analysis -->
+        <dependency>
+            <groupId>eu.verdelhan</groupId>
+            <artifactId>ta4j</artifactId>
+            <version>0.9</version>
+        </dependency>
+        
+        <!-- Crypto-currency trading platforms -->
+        <dependency>
+            <groupId>org.knowm.xchange</groupId>
+            <artifactId>xchange-core</artifactId>
+            <version>4.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.knowm.xchange</groupId>
+            <artifactId>xchange-bittrex</artifactId>
+            <version>4.2.3</version>
+        </dependency>
 
 		<dependency>
 			<groupId>org.hsqldb</groupId>
