@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
@@ -22,13 +23,16 @@ public class TelegramServiceImpl implements TelegramService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TelegramServiceImpl.class);
 
+    private final ApplicationContext context;
+
     private final FreqTradeProperties properties;
 
     private FreqTradeTelegramBot bot;
 
     @Autowired
-    public TelegramServiceImpl(FreqTradeProperties properties) {
-        this.properties = properties;
+    public TelegramServiceImpl(ApplicationContext context) {
+        this.context = context;
+        this.properties = context.getBean(FreqTradeProperties.class);
     }
 
     @Override
@@ -49,7 +53,7 @@ public class TelegramServiceImpl implements TelegramService {
 
             TelegramBotsApi botsApi = new TelegramBotsApi();
 
-            bot = new FreqTradeTelegramBot(properties);
+            bot = new FreqTradeTelegramBot(context);
 
             botsApi.registerBot(bot);
         }
