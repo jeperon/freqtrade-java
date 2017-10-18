@@ -25,15 +25,14 @@ public class FreqTradeTelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         LOGGER.debug("Received: {}", update);
-        final Long messageChatId = Optional.ofNullable(update.getMessage()).map(Message::getChatId).orElse(null);
-        final Long editedMessageChatId = Optional.ofNullable(update.getEditedMessage()).map(Message::getChatId).orElse(null);
-        final Long chatId = Optional.ofNullable(messageChatId).orElse(editedMessageChatId);
+        final Message message = Optional.ofNullable(update.getMessage()).orElse(update.getEditedMessage());
+        final Long chatId = message.getChatId();
         if (!telegramProperties.getChatId().equals(chatId)) {
             LOGGER.debug("Unauthorized access, ignoring (chat_id: {}, expected: {})", update.getMessage().getChatId(), telegramProperties.getChatId());
             return;
         }
 
-        final String command = update.getMessage().getText();
+        final String command = message.getText();
         switch (command) {
         case "/profit":
             LOGGER.info("/profit command");
@@ -51,9 +50,9 @@ public class FreqTradeTelegramBot extends TelegramLongPollingBot {
             break;
 
         default:
-            final String message = String.format("Unkown command received: %s", command);
-            LOGGER.info(message);
-            SendMessage sendMessage = new SendMessage(telegramProperties.getChatId(), message);
+            final String unknownCommandMessage = String.format("Unkown command received: %s", command);
+            LOGGER.info(unknownCommandMessage);
+            SendMessage sendMessage = new SendMessage(telegramProperties.getChatId(), unknownCommandMessage);
 
             try {
                 execute(sendMessage);
