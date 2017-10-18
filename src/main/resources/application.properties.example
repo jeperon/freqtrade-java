@@ -1,0 +1,8 @@
+### Logging ###
+logging.level.ch.urbanfox=INFO
+
+### FreqTrad specific
+freqtrade.telegram.enabled=true
+freqtrade.telegram.token=000000000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+freqtrade.telegram.chat-id=000000000
+freqtrade.telegram.bot-name=FreqTradeBot
