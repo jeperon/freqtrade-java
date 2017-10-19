@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "trades")
-public class Trade {
+public class TradeEntity {
 
     @Id
     @GeneratedValue
