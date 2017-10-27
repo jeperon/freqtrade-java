@@ -46,9 +46,9 @@ public class TelegramServiceImpl implements TelegramService {
 
     @PostConstruct
     public void init() throws TelegramApiRequestException {
-        LOGGER.info("Initializing Telegram service...");
-
         if (properties.getTelegram().getEnabled()) {
+            LOGGER.info("Initializing Telegram service...");
+
             ApiContextInitializer.init();
 
             TelegramBotsApi botsApi = new TelegramBotsApi();
@@ -56,6 +56,8 @@ public class TelegramServiceImpl implements TelegramService {
             bot = new FreqTradeTelegramBot(context);
 
             botsApi.registerBot(bot);
+        } else {
+            LOGGER.info("Telegram service is disabled");
         }
     }
 
