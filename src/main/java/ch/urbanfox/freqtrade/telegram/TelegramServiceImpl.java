@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
+import org.telegram.telegrambots.api.methods.ParseMode;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
@@ -37,9 +38,15 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     public void sendMessage(String message) throws TelegramApiException {
+        sendMessage(message, ParseMode.MARKDOWN);
+    }
+
+    @Override
+    public void sendMessage(String message, String parseMode) throws TelegramApiException {
         LOGGER.info("Sending message: {}", message);
 
         SendMessage sendMessage = new SendMessage(properties.getTelegram().getChatId(), message);
+        sendMessage.setParseMode(parseMode);
 
         bot.execute(sendMessage);
     }

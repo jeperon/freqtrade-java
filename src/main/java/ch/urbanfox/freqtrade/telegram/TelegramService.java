@@ -15,4 +15,6 @@ public interface TelegramService {
      */
     void sendMessage(String message) throws TelegramApiException;
 
+    void sendMessage(String message, String parseMode) throws TelegramApiException;
+
 }
