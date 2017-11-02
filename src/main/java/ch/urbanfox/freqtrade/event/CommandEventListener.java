@@ -1,5 +1,8 @@
 package ch.urbanfox.freqtrade.event;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +12,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import ch.urbanfox.freqtrade.event.model.CommandEvent;
 import ch.urbanfox.freqtrade.telegram.TelegramService;
+import ch.urbanfox.freqtrade.telegram.command.CommandHandler;
 
 @Component
 public class CommandEventListener {
@@ -17,9 +21,14 @@ public class CommandEventListener {
 
     private final TelegramService telegramService;
 
+    private final Set<String> availableCommandNames;
+
     @Autowired
-    public CommandEventListener(TelegramService telegramService) {
+    public CommandEventListener(TelegramService telegramService, Set<CommandHandler> handlers) {
         this.telegramService = telegramService;
+        this.availableCommandNames = handlers.stream()
+                .map(CommandHandler::getCommandName)
+                .collect(Collectors.toSet());
     }
 
     @EventListener
@@ -27,28 +36,14 @@ public class CommandEventListener {
         LOGGER.debug("Received event: {}", event);
 
         final String command = event.getCommand();
-        switch (command) {
-        case "/performance":
-            LOGGER.info("/performance command");
-            // TODO implements the response to the performance command
-            break;
+        if (!availableCommandNames.contains(command)) {
 
-        case "/profit":
-            LOGGER.info("/profit command");
-            // TODO implements the response to the profit command
-            break;
-
-        case "/status":
-            LOGGER.info("/status command");
-            // TODO implements the response to the status command
-            break;
-
-        default:
             final String unknownCommandMessage = String.format("Unkown command received: %s", command);
-            LOGGER.info(unknownCommandMessage);
+            LOGGER.debug(unknownCommandMessage);
 
             try {
                 telegramService.sendMessage(unknownCommandMessage);
+                telegramService.sendMessage(String.format("Available commands: %s", availableCommandNames));
             } catch (TelegramApiException e) {
                 LOGGER.warn("Unable to reply to message", e);
             }

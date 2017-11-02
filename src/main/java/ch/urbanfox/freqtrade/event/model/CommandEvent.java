@@ -7,12 +7,19 @@ public class CommandEvent {
 
     private final String command;
 
-    public CommandEvent(String command) {
+    private final String[] params;
+
+    public CommandEvent(String command, String... params) {
         this.command = command;
+        this.params = params;
     }
 
     public String getCommand() {
         return command;
+    }
+
+    public String[] getParams() {
+        return params;
     }
 
     @Override
