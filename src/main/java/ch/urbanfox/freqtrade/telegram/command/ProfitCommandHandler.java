@@ -29,7 +29,7 @@ import ch.urbanfox.freqtrade.trade.TradeService;
  * Handler for /profit
  */
 @Component
-public class ProfitCommandHandler {
+public class ProfitCommandHandler extends AbstractCommandHandler {
 
     @Autowired
     private FreqTradeExchangeService exchangeService;
@@ -40,13 +40,19 @@ public class ProfitCommandHandler {
     @Autowired
     private TelegramService telegramService;
 
+    @Override
+    public String getCommandName() {
+        return "/profit";
+    }
+
     /**
      * Returns a cumulative profit statistics
      *
      * @throws IOException if any error occurs while communicating with the exchange
      * @throws TelegramApiException if any error occur while using the Telegram API
      */
-    public void profit() throws TelegramApiException, IOException {
+    @Override
+    protected void handleInternal(String[] params) throws Exception {
         List<TradeEntity> trades = tradeService.findAllOrderById();
 
         List<BigDecimal> profitAmounts = new ArrayList<>();

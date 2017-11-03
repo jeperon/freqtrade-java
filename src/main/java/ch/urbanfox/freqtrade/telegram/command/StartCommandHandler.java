@@ -2,7 +2,6 @@ package ch.urbanfox.freqtrade.telegram.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import ch.urbanfox.freqtrade.FreqTradeMainRunner;
 import ch.urbanfox.freqtrade.telegram.TelegramService;
@@ -12,7 +11,7 @@ import ch.urbanfox.freqtrade.type.State;
  * Handler for /start
  */
 @Component
-public class StartCommandHandler {
+public class StartCommandHandler extends AbstractCommandHandler {
 
     @Autowired
     private FreqTradeMainRunner runner;
@@ -20,7 +19,13 @@ public class StartCommandHandler {
     @Autowired
     private TelegramService telegramService;
 
-    public void start() throws TelegramApiException {
+    @Override
+    public String getCommandName() {
+        return "/start";
+    }
+
+    @Override
+    protected void handleInternal(String[] params) throws Exception {
         if (runner.getState() == State.RUNNING) {
             telegramService.sendMessage("*Status:* `already running`");
         } else {

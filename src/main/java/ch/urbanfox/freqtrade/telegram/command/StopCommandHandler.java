@@ -12,7 +12,7 @@ import ch.urbanfox.freqtrade.type.State;
  * Handler for /stop
  */
 @Component
-public class StopCommandHandler {
+public class StopCommandHandler extends AbstractCommandHandler {
 
     @Autowired
     private FreqTradeMainRunner runner;
@@ -20,12 +20,18 @@ public class StopCommandHandler {
     @Autowired
     private TelegramService telegramService;
 
+    @Override
+    public String getCommandName() {
+        return "/stop";
+    }
+
     /**
      * Stops trading
      *
      * @throws TelegramApiException if any error occurs while using Telegram API
      */
-    public void stop() throws TelegramApiException {
+    @Override
+    protected void handleInternal(String[] params) throws Exception {
         if (runner.getState() == State.RUNNING) {
             telegramService.sendMessage("`Stopping trader ...`");
             runner.updateState(State.STOPPED);

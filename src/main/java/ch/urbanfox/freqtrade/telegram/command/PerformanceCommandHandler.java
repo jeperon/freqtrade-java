@@ -26,7 +26,7 @@ import ch.urbanfox.freqtrade.type.State;
  * Handler for /performance
  */
 @Component
-public class PerformanceCommandHandler {
+public class PerformanceCommandHandler extends AbstractCommandHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceCommandHandler.class);
 
@@ -39,12 +39,18 @@ public class PerformanceCommandHandler {
     @Autowired
     private TelegramService telegramService;
 
+    @Override
+    public String getCommandName() {
+        return "/performance";
+    }
+
     /**
      * Shows a performance statistic from finished trades
      *
      * @throws TelegramApiException if any error occur while using Telegram API
      */
-    public void performance() throws TelegramApiException {
+    @Override
+    protected void handleInternal(String[] params) throws Exception {
 
         if (runner.getState() != State.RUNNING) {
             telegramService.sendMessage("`trader is not running`");

@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import ch.urbanfox.freqtrade.FreqTradeMainRunner;
@@ -22,7 +23,8 @@ import ch.urbanfox.freqtrade.type.State;
 /**
  * Handler for /status
  */
-public class StatusCommandHandler {
+@Component
+public class StatusCommandHandler extends AbstractCommandHandler {
 
     @Autowired
     private FreqTradeMainRunner runner;
@@ -36,13 +38,19 @@ public class StatusCommandHandler {
     @Autowired
     private TelegramService telegramService;
 
+    @Override
+    public String getCommandName() {
+        return "/status";
+    }
+
     /**
      * Returns the current status
      *
      * @throws IOException if any error occurs while contacting the exchange
      * @throws TelegramApiException if any error occurs while using the Telegram API
      */
-    public void status() throws TelegramApiException, IOException {
+    @Override
+    protected void handleInternal(String[] params) throws Exception {
         // Fetch open trade
         List<TradeEntity> trades = tradeService.findAllOpenTrade();
         if (runner.getState() != State.RUNNING) {
