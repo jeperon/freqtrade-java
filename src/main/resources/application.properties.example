@@ -1,6 +1,9 @@
 ### Logging ###
 logging.level.ch.urbanfox=INFO
 
+### HSQLdb
+spring.datasource.url=jdbc:hsqldb:file:freqtrade.db
+
 ### FreqTrad specific
 freqtrade.dry-run=false
 freqtrade.initial-state=RUNNING
