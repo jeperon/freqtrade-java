@@ -222,9 +222,14 @@ public class FreqTradeMainRunner {
         LOGGER.info("Creating new trade with stake_amount: {} ...", stakeAmount);
         List<CurrencyPair> whitelist = properties.getPairWhitelist();
         // Check if stake_amount is fulfilled
-        if (exchangeService.getBalance(properties.getStakeCurrency()).compareTo(stakeAmount) < 0) {
-            LOGGER.info("stake amount is not fulfilled (currency={})", properties.getStakeCurrency());
+        final BigDecimal balance = exchangeService.getBalance(properties.getStakeCurrency());
+        if (balance.compareTo(stakeAmount) > 0) {
+            LOGGER.info("stake amount is not fulfilled (available={}, stake={}, currency={})", balance,
+                    properties.getStakeCurrency(), properties.getStakeCurrency());
             return Optional.empty();
+        } else {
+            LOGGER.debug("balance is sufficient: {}, stake: {}, currency: {}", balance, properties.getStakeAmount(),
+                    properties.getStakeCurrency());
         }
 
         // Remove currently opened and latest pairs from whitelist
@@ -324,7 +329,7 @@ public class FreqTradeMainRunner {
             }
         } catch (RuntimeException e) {
             telegramService.sendMessage(String.format("*Status:* Got RuntimeError: ```%n%s%n```", e.getMessage()));
-            LOGGER.error("RuntimeError. Trader stopped!");
+            LOGGER.error("RuntimeError. Trader stopped!", e);
         } finally {
             telegramService.sendMessage("*Status:* `Trader has stopped`");
         }
