@@ -43,12 +43,16 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     public void sendMessage(String message, String parseMode) throws TelegramApiException {
-        LOGGER.info("Sending message: {}", message);
+        if (properties.getTelegram().getEnabled()) {
+            LOGGER.info("Sending message: {}", message);
 
-        SendMessage sendMessage = new SendMessage(properties.getTelegram().getChatId(), message);
-        sendMessage.setParseMode(parseMode);
+            SendMessage sendMessage = new SendMessage(properties.getTelegram().getChatId(), message);
+            sendMessage.setParseMode(parseMode);
 
-        bot.execute(sendMessage);
+            bot.execute(sendMessage);
+        } else {
+            LOGGER.info("Telegram is disabled, message: '{}' not sent", message);
+        }
     }
 
     @PostConstruct
