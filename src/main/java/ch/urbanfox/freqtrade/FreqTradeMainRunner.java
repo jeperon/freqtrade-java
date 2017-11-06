@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.knowm.xchange.bittrex.dto.marketdata.BittrexChartData;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.Ticker;
@@ -26,10 +28,12 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import ch.urbanfox.freqtrade.analyze.AnalyzeService;
 import ch.urbanfox.freqtrade.exchange.FreqTradeExchangeService;
+import ch.urbanfox.freqtrade.exchange.converter.BittrexDataConverter;
 import ch.urbanfox.freqtrade.telegram.TelegramService;
 import ch.urbanfox.freqtrade.trade.TradeEntity;
 import ch.urbanfox.freqtrade.trade.TradeService;
 import ch.urbanfox.freqtrade.type.State;
+import eu.verdelhan.ta4j.TimeSeries;
 
 @Component
 public class FreqTradeMainRunner {
@@ -252,11 +256,13 @@ public class FreqTradeMainRunner {
         // Pick pair based on StochRSI buy signals
         CurrencyPair pair = null;
         for (CurrencyPair _pair : whitelist) {
-            if (analyzeService.getBuySignal(_pair)) {
+            ZonedDateTime minimumDate = ZonedDateTime.now().minusHours(6);
+            List<BittrexChartData> rawTickers = exchangeService.fetchRawticker(_pair, minimumDate);    
+            TimeSeries tickers = new BittrexDataConverter().parseRawTickers(rawTickers);
+            
+            if (analyzeService.getBuySignal(tickers)) {
                 pair = _pair;
                 break;
-            } else {
-                return Optional.empty();
             }
         }
 

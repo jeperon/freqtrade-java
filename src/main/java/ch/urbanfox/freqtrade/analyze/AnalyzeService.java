@@ -1,19 +1,15 @@
 package ch.urbanfox.freqtrade.analyze;
 
-import java.io.IOException;
-
-import org.knowm.xchange.currency.CurrencyPair;
+import eu.verdelhan.ta4j.TimeSeries;
 
 public interface AnalyzeService {
 
     /**
      * Calculates a buy signal based several technical analysis indicators
      *
-     * @param pair the trading pair
+     * @param tickers the tickers to analyze
      * @return true if pair is good for buying, false otherwise
-     *
-     * @throws IOException if any communication error occurs while querying exchange for information
      */
-    boolean getBuySignal(CurrencyPair pair) throws IOException;
+    boolean getBuySignal(TimeSeries tickers);
 
 }
