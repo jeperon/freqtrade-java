@@ -24,7 +24,7 @@ public class FreqTradeConfiguration {
     public ApplicationEventMulticaster simpleApplicationEventMulticaster() {
         SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
 
-        taskExecutor = new ThreadPoolTaskExecutor();
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setThreadNamePrefix("asyncEventExecutor-");
         taskExecutor.setCorePoolSize(4);
         taskExecutor.initialize();
