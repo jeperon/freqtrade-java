@@ -26,14 +26,14 @@ public class TelegramServiceImpl implements TelegramService {
 
     private final ApplicationContext context;
 
-    private final FreqTradeProperties properties;
+    private final TelegramProperties telegramProperties;
 
     private FreqTradeTelegramBot bot;
 
     @Autowired
-    public TelegramServiceImpl(ApplicationContext context) {
+    public TelegramServiceImpl(ApplicationContext context, FreqTradeProperties properties) {
         this.context = context;
-        this.properties = context.getBean(FreqTradeProperties.class);
+        this.telegramProperties = properties.getTelegram();
     }
 
     @Override
@@ -43,10 +43,10 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     public void sendMessage(String message, String parseMode) throws TelegramApiException {
-        if (properties.getTelegram().getEnabled()) {
+        if (telegramProperties.getEnabled()) {
             LOGGER.info("Sending message: {}", message);
 
-            SendMessage sendMessage = new SendMessage(properties.getTelegram().getChatId(), message);
+            SendMessage sendMessage = new SendMessage(telegramProperties.getChatId(), message);
             sendMessage.setParseMode(parseMode);
 
             bot.execute(sendMessage);
@@ -57,14 +57,14 @@ public class TelegramServiceImpl implements TelegramService {
 
     @PostConstruct
     public void init() throws TelegramApiRequestException {
-        if (properties.getTelegram().getEnabled()) {
+        if (telegramProperties.getEnabled()) {
             LOGGER.info("Initializing Telegram service...");
 
             ApiContextInitializer.init();
 
             TelegramBotsApi botsApi = new TelegramBotsApi();
 
-            bot = new FreqTradeTelegramBot(context);
+            bot = new FreqTradeTelegramBot(context, telegramProperties);
 
             botsApi.registerBot(bot);
         } else {

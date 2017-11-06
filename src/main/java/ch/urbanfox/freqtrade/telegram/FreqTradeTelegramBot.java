@@ -9,7 +9,6 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
-import ch.urbanfox.freqtrade.FreqTradeProperties;
 import ch.urbanfox.freqtrade.event.model.CommandEvent;
 
 public class FreqTradeTelegramBot extends TelegramLongPollingBot {
@@ -20,10 +19,9 @@ public class FreqTradeTelegramBot extends TelegramLongPollingBot {
 
     private final TelegramProperties telegramProperties;
 
-    public FreqTradeTelegramBot(ApplicationContext context) {
+    public FreqTradeTelegramBot(ApplicationContext context, TelegramProperties telegramProperties) {
         this.context = context;
-        FreqTradeProperties properties = context.getBean(FreqTradeProperties.class);
-        this.telegramProperties = properties.getTelegram();
+        this.telegramProperties = telegramProperties;
     }
 
     @Override
