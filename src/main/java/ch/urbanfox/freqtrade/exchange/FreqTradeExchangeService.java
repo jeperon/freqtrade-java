@@ -2,8 +2,10 @@ package ch.urbanfox.freqtrade.exchange;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.knowm.xchange.bittrex.dto.marketdata.BittrexChartData;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.Ticker;
@@ -41,7 +43,8 @@ public interface FreqTradeExchangeService {
      * @param amount The amount to sell
      * @return the order ID
      *
-     * @throws IOException if any communication error occur while contacting the exchange
+     * @throws IOException if any communication error occur while contacting the
+     *             exchange
      */
     String sell(CurrencyPair pair, BigDecimal rate, BigDecimal amount) throws IOException;
 
@@ -51,7 +54,8 @@ public interface FreqTradeExchangeService {
      * @param pair the currency pair
      * @return list of orders
      *
-     * @throws IOException if any communication error occur while contacting the exchange
+     * @throws IOException if any communication error occur while contacting the
+     *             exchange
      */
     List<LimitOrder> getOpenOrders(CurrencyPair pair) throws IOException;
 
@@ -69,8 +73,19 @@ public interface FreqTradeExchangeService {
      * @param currency currency as str, format: BTC
      * @return balance
      *
-     * @throws IOException if any communication error occur while contacting the exchange
+     * @throws IOException if any communication error occur while contacting the
+     *             exchange
      */
     BigDecimal getBalance(Currency currency) throws IOException;
+
+    /**
+     * Request ticker data from Bittrex for a given currency pair
+     */
+    List<BittrexChartData> fetchRawticker(CurrencyPair pair) throws IOException;
+
+    /**
+     * Request ticker data from Bittrex for a given currency pair
+     */
+    List<BittrexChartData> fetchRawticker(CurrencyPair pair, ZonedDateTime minimumDate) throws IOException;
 
 }

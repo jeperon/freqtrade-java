@@ -2,10 +2,16 @@ package ch.urbanfox.freqtrade.exchange;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.knowm.xchange.Exchange;
+import org.knowm.xchange.bittrex.dto.marketdata.BittrexChartData;
+import org.knowm.xchange.bittrex.service.BittrexChartDataPeriodType;
+import org.knowm.xchange.bittrex.service.BittrexMarketDataService;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order.OrderType;
@@ -16,7 +22,6 @@ import org.knowm.xchange.dto.marketdata.Ticker;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.dto.trade.OpenOrders;
 import org.knowm.xchange.service.account.AccountService;
-import org.knowm.xchange.service.marketdata.MarketDataService;
 import org.knowm.xchange.service.trade.TradeService;
 import org.knowm.xchange.service.trade.params.orders.DefaultOpenOrdersParamCurrencyPair;
 import org.knowm.xchange.service.trade.params.orders.OpenOrdersParams;
@@ -39,7 +44,7 @@ public class FreqTradeExchangeServiceImpl implements FreqTradeExchangeService {
      * Current selected exchange
      */
     private final Exchange exchange;
-    private final MarketDataService marketDataService;
+    private final BittrexMarketDataService marketDataService;
     private final AccountService accountService;
     private final TradeService tradeService;
 
@@ -49,7 +54,7 @@ public class FreqTradeExchangeServiceImpl implements FreqTradeExchangeService {
 
         this.exchange = exchange;
 
-        marketDataService = exchange.getMarketDataService();
+        marketDataService = (BittrexMarketDataService) exchange.getMarketDataService();
         accountService = exchange.getAccountService();
         tradeService = exchange.getTradeService();
 
@@ -131,6 +136,34 @@ public class FreqTradeExchangeServiceImpl implements FreqTradeExchangeService {
     @Override
     public String getPairDetailUrl(String pair) {
         return String.format("https://bittrex.com/Market/Index?MarketName=%s", pair.replace("_", "-"));
+    }
+
+    @Override
+    public List<BittrexChartData> fetchRawticker(CurrencyPair pair) throws IOException {
+        LOGGER.debug("Fetching ticks for: {}", pair);
+
+        List<BittrexChartData> ticks = marketDataService.getBittrexChartData(pair, BittrexChartDataPeriodType.FIVE_MIN);
+
+        LOGGER.debug("Found {} ticks", ticks.size());
+
+        return ticks;
+    }
+
+    @Override
+    public List<BittrexChartData> fetchRawticker(CurrencyPair pair, ZonedDateTime minimumDate) throws IOException {
+        LOGGER.debug("Fetching ticks for: {}, minimum date: {}", pair, minimumDate);
+
+        List<BittrexChartData> ticks = marketDataService.getBittrexChartData(pair, BittrexChartDataPeriodType.FIVE_MIN);
+
+        LOGGER.debug("Found {} ticks", ticks.size());
+
+        List<BittrexChartData> filteredTicks = ticks.stream()
+                .filter(t -> t.getTimeStamp().after(Date.from(minimumDate.toInstant())))
+                .collect(Collectors.toList());
+
+        LOGGER.debug("After filtering: {} ticks", filteredTicks.size());
+
+        return filteredTicks;
     }
 
     /**
