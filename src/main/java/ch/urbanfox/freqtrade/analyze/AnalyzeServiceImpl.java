@@ -18,6 +18,11 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
         BuySignalIndicator buySignal = new BuySignalIndicator(tickers, 33, Decimal.valueOf(0.25));
 
+        // Need to go through all index to initialize indicators
+        for (int i = tickers.getBeginIndex(); i <= tickers.getEndIndex(); i++) {
+            buySignal.getValue(i);
+        }
+
         boolean signal = buySignal.getValue(tickers.getEndIndex());
         LOGGER.debug("buy_trigger: {} (end time={})", signal, tickers.getLastTick().getEndTime());
         return signal;
