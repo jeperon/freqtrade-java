@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.util.concurrent.RateLimiter;
+
 import ch.urbanfox.freqtrade.FreqTradeProperties;
 import ch.urbanfox.freqtrade.exchange.exception.FreqTradeExchangeInitializationException;
 
@@ -39,6 +41,8 @@ public class FreqTradeExchangeServiceImpl implements FreqTradeExchangeService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FreqTradeExchangeServiceImpl.class);
 
     private final FreqTradeProperties properties;
+    
+    private final RateLimiter rateLimiter = RateLimiter.create(0.03);
 
     /**
      * Current selected exchange
@@ -73,6 +77,7 @@ public class FreqTradeExchangeServiceImpl implements FreqTradeExchangeService {
 
     @Override
     public String buy(CurrencyPair pair, BigDecimal rate, BigDecimal amount) throws IOException {
+        rateLimiter.acquire();
         LOGGER.debug("Placing buy order: pair: {}, rate: {}, amount: {}", pair, rate, amount);
 
         if (properties.isDryRun()) {
@@ -85,6 +90,7 @@ public class FreqTradeExchangeServiceImpl implements FreqTradeExchangeService {
 
     @Override
     public String sell(CurrencyPair pair, BigDecimal rate, BigDecimal amount) throws IOException {
+        rateLimiter.acquire();
         LOGGER.debug("Placing sell order: pair: {}, rate: {}, amount: {}", pair, rate, amount);
 
         if (properties.isDryRun()) {
@@ -97,6 +103,7 @@ public class FreqTradeExchangeServiceImpl implements FreqTradeExchangeService {
 
     @Override
     public BigDecimal getBalance(Currency currency) throws IOException {
+        rateLimiter.acquire();
         if (properties.isDryRun()) {
             return BigDecimal.valueOf(999.9);
         } else {
@@ -114,12 +121,14 @@ public class FreqTradeExchangeServiceImpl implements FreqTradeExchangeService {
 
     @Override
     public Ticker getTicker(CurrencyPair pair) throws IOException {
+        rateLimiter.acquire();
         LOGGER.debug("Getting ticker for pair: {}", pair);
         return marketDataService.getTicker(pair);
     }
 
     @Override
     public List<LimitOrder> getOpenOrders(CurrencyPair pair) throws IOException {
+        rateLimiter.acquire();
         LOGGER.debug("Fetching open orders for pair: {}", pair);
 
         if (properties.isDryRun()) {
@@ -140,6 +149,7 @@ public class FreqTradeExchangeServiceImpl implements FreqTradeExchangeService {
 
     @Override
     public List<BittrexChartData> fetchRawticker(CurrencyPair pair) throws IOException {
+        rateLimiter.acquire();
         LOGGER.debug("Fetching ticks for: {}", pair);
 
         List<BittrexChartData> ticks = marketDataService.getBittrexChartData(pair, BittrexChartDataPeriodType.FIVE_MIN);
@@ -151,6 +161,7 @@ public class FreqTradeExchangeServiceImpl implements FreqTradeExchangeService {
 
     @Override
     public List<BittrexChartData> fetchRawticker(CurrencyPair pair, ZonedDateTime minimumDate) throws IOException {
+        rateLimiter.acquire();
         LOGGER.debug("Fetching ticks for: {}, minimum date: {}", pair, minimumDate);
 
         List<BittrexChartData> ticks = marketDataService.getBittrexChartData(pair, BittrexChartDataPeriodType.FIVE_MIN);
@@ -172,6 +183,7 @@ public class FreqTradeExchangeServiceImpl implements FreqTradeExchangeService {
      * @return list of all available pairs
      */
     private List<CurrencyPair> getMarkets() {
+        rateLimiter.acquire();
         LOGGER.debug("Fetching currency pairs...");
         List<CurrencyPair> availablePairs = exchange.getExchangeSymbols();
         LOGGER.debug("Available pairs: {}", availablePairs);
