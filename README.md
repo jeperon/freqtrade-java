@@ -41,7 +41,7 @@ profit dips below -10% for a given trade. This parameter is optional.
 The other values should be self-explanatory, if not feel free to raise a github issue.
 
 #### Prerequisites
-* Java 8
+* Java 11
 
 #### Execute tests
 

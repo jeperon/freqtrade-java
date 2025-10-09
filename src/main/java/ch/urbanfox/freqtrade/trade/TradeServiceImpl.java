@@ -57,7 +57,7 @@ public class TradeServiceImpl implements TradeService {
 
     @Override
     public List<TradeEntity> findAllOrderById() {
-        return tradeRepository.findAll(new Sort(Direction.ASC, "id"));
+        return tradeRepository.findAll(Sort.by(Direction.ASC, "id"));
     }
 
     @Override
