@@ -1,9 +1,9 @@
 package ch.urbanfox.freqtrade.telegram.command;
 
+import com.google.common.base.Objects;
 import org.springframework.context.event.EventListener;
 
 import ch.urbanfox.freqtrade.event.model.CommandEvent;
-import jersey.repackaged.com.google.common.base.Objects;
 
 public abstract class AbstractCommandHandler implements CommandHandler {
 
